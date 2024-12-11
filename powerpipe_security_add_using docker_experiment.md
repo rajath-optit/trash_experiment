@@ -41,31 +41,258 @@ This will generate a **self-signed** SSL certificate valid for one year.
 2. Add the following configuration to the file:
 
    ```nginx
-   # HTTPS Configuration (for port 443)
-   server {
-       listen 443 ssl;
-       server_name 10.10.30.93;  # Or use localhost if needed
+# HTTPS Configuration for Foradian Container 1 (Port 9102)
+server {
+    listen 443 ssl;
+    server_name 10.10.30.93;
 
-       # SSL Configuration
-       ssl_certificate /etc/nginx/ssl/selfsigned.crt;
-       ssl_certificate_key /etc/nginx/ssl/selfsigned.key;
-       
-       # SSL Protocols & Ciphers for better security
-       ssl_protocols TLSv1.2 TLSv1.3;
-       ssl_ciphers 'HIGH:!aNULL:!MD5';
+    # SSL Configuration
+    ssl_certificate /etc/nginx/ssl/selfsigned.crt;
+    ssl_certificate_key /etc/nginx/ssl/selfsigned.key;
 
-       # Optional Basic Authentication
-       # auth_basic "Restricted Area";
-       # auth_basic_user_file /etc/nginx/.htpasswd;
+    # SSL Protocols & Ciphers for better security
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers 'HIGH:!aNULL:!MD5';
 
-       # Proxy settings to forward traffic to your application
-       location / {
-           proxy_pass http://localhost:9102;  # Forward to your application (replace with correct port)
-           proxy_set_header Host $host;
-           proxy_set_header X-Real-IP $remote_addr;
-           proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-       }
-   }
+    # Basic Authentication for Foradian Container 1
+    auth_basic "Restricted Area";
+    auth_basic_user_file /etc/nginx/.htpasswd-foradian1;
+
+    # WebSocket for Foradian Container 1
+    location /ws {
+        proxy_pass http://localhost:9102;  
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+
+    # Manifest without authentication
+    location /manifest.json {
+        proxy_pass http://10.10.30.93:9102/manifest.json;
+        auth_basic off;
+    }
+
+    # Proxy for Powerpipe app
+    location / {
+        proxy_pass http://10.10.30.93:9102;  
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
+}
+
+# HTTPS Configuration for Foradian Container 2 (Port 9103)
+server {
+    listen 443 ssl;
+    server_name 10.10.30.93;
+
+    # SSL Configuration
+    ssl_certificate /etc/nginx/ssl/selfsigned.crt;
+    ssl_certificate_key /etc/nginx/ssl/selfsigned.key;
+
+    # SSL Protocols & Ciphers for better security
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers 'HIGH:!aNULL:!MD5';
+
+    # Basic Authentication for Foradian Container 2
+    auth_basic "Restricted Area";
+    auth_basic_user_file /etc/nginx/.htpasswd-foradian2;
+
+    # WebSocket for Foradian Container 2
+    location /ws {
+        proxy_pass http://localhost:9103;  
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+
+    # Manifest without authentication
+    location /manifest.json {
+        proxy_pass http://10.10.30.93:9103/manifest.json;
+        auth_basic off;
+    }
+
+    # Proxy for Powerpipe app
+    location / {
+        proxy_pass http://10.10.30.93:9103;  
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
+}
+
+# HTTPS Configuration for Capitalmind Container (Port 9104)
+server {
+    listen 443 ssl;
+    server_name 10.10.30.93;
+
+    # SSL Configuration
+    ssl_certificate /etc/nginx/ssl/selfsigned.crt;
+    ssl_certificate_key /etc/nginx/ssl/selfsigned.key;
+
+    # SSL Protocols & Ciphers for better security
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers 'HIGH:!aNULL:!MD5';
+
+    # Basic Authentication for Capitalmind Container
+    auth_basic "Restricted Area";
+    auth_basic_user_file /etc/nginx/.htpasswd-capitalmind;
+
+    # WebSocket for Capitalmind Container
+    location /ws {
+        proxy_pass http://localhost:9104;  
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+
+    # Manifest without authentication
+    location /manifest.json {
+        proxy_pass http://10.10.30.93:9104/manifest.json;
+        auth_basic off;
+    }
+
+    # Proxy for Powerpipe app
+    location / {
+        proxy_pass http://10.10.30.93:9104;  
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
+}
+
+# HTTPS Configuration for Vested Container (Port 9105)
+server {
+    listen 443 ssl;
+    server_name 10.10.30.93;
+
+    # SSL Configuration
+    ssl_certificate /etc/nginx/ssl/selfsigned.crt;
+    ssl_certificate_key /etc/nginx/ssl/selfsigned.key;
+
+    # SSL Protocols & Ciphers for better security
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers 'HIGH:!aNULL:!MD5';
+
+    # Basic Authentication for Vested Container
+    auth_basic "Restricted Area";
+    auth_basic_user_file /etc/nginx/.htpasswd-vested;
+
+    # WebSocket for Vested Container
+    location /ws {
+        proxy_pass http://localhost:9105;  
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+
+    # Manifest without authentication
+    location /manifest.json {
+        proxy_pass http://10.10.30.93:9105/manifest.json;
+        auth_basic off;
+    }
+
+    # Proxy for Powerpipe app
+    location / {
+        proxy_pass http://10.10.30.93:9105;  
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
+}
+
+# HTTPS Configuration for FrontM Container (Port 9106)
+server {
+    listen 443 ssl;
+    server_name 10.10.30.93;
+
+    # SSL Configuration
+    ssl_certificate /etc/nginx/ssl/selfsigned.crt;
+    ssl_certificate_key /etc/nginx/ssl/selfsigned.key;
+
+    # SSL Protocols & Ciphers for better security
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers 'HIGH:!aNULL:!MD5';
+
+    # Basic Authentication for FrontM Container
+    auth_basic "Restricted Area";
+    auth_basic_user_file /etc/nginx/.htpasswd-frontm;
+
+    # WebSocket for FrontM Container
+    location /ws {
+        proxy_pass http://localhost:9106;  
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+
+    # Manifest without authentication
+    location /manifest.json {
+        proxy_pass http://10.10.30.93:9106/manifest.json;
+        auth_basic off;
+    }
+
+    # Proxy for Powerpipe app
+    location / {
+        proxy_pass http://10.10.30.93:9106;  
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
+}
+
+# HTTPS Configuration for Parkquility Container (Port 9107)
+server {
+    listen 443 ssl;
+    server_name 10.10.30.93;
+
+    # SSL Configuration
+    ssl_certificate /etc/nginx/ssl/selfsigned.crt;
+    ssl_certificate_key /etc/nginx/ssl/selfsigned.key;
+
+    # SSL Protocols & Ciphers for better security
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers 'HIGH:!aNULL:!MD5';
+
+    # Basic Authentication for Parkquility Container
+    auth_basic "Restricted Area";
+    auth_basic_user_file /etc/nginx/.htpasswd-parkquility;
+
+    # WebSocket for Parkquility Container
+    location /ws {
+        proxy_pass http://localhost:9107;  
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+
+    # Manifest without authentication
+    location /manifest.json {
+        proxy_pass http://10.10.30.93:9107/manifest.json;
+        auth_basic off;
+    }
+
+    # Proxy for Powerpipe app
+    location / {
+        proxy_pass http://10.10.30.93:9107;  
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
+}
+
    ```
 
 3. Enable the configuration by creating a symbolic link to `/etc/nginx/sites-enabled/`:
